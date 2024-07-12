@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-import views
+from oidc_auth import views
 
 urlpatterns = [
     url(r'^login/$', views.login_begin, name='oidc-login'),

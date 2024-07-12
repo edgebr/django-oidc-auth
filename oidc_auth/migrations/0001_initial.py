@@ -42,8 +42,11 @@ class Migration(migrations.Migration):
                 ('sub', models.CharField(unique=True, max_length=255)),
                 ('access_token', models.CharField(max_length=255)),
                 ('refresh_token', models.CharField(max_length=255)),
-                ('issuer', models.ForeignKey(to='oidc_auth.OpenIDProvider')),
-                ('user', models.OneToOneField(related_name='oidc_account', to=settings.AUTH_USER_MODEL)),
+                ('issuer', models.ForeignKey(to='oidc_auth.OpenIDProvider',
+                                             on_delete=models.PROTECT)),
+                ('user', models.OneToOneField(related_name='oidc_account',
+                                              on_delete=models.PROTECT,
+                                              to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

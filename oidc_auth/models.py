@@ -1,7 +1,7 @@
 import string
 import random
 import json
-from urlparse import urljoin
+from urllib.parse import urljoin
 import requests
 from django.db import models, IntegrityError
 from django.conf import settings
@@ -31,7 +31,7 @@ class Nonce(models.Model):
         """This method generates and returns a nonce, an unique generated
         string. If the maximum of retries is exceeded, it returns None.
         """
-        CHARS = string.letters + string.digits
+        CHARS = string.ascii_letters + string.digits
 
         for i in range(5):
             _hash = ''.join(random.choice(CHARS) for n in range(length))
@@ -147,7 +147,7 @@ class OpenIDProvider(models.Model):
 
         id_token = JWS().verify_compact(token, self.signing_keys)
         log.debug('Token verified, %s' % id_token)
-        return json.loads(id_token)
+        return id_token
 
     @staticmethod
     def _get_issuer(token):
@@ -196,9 +196,15 @@ def get_default_provider():
 
 class OpenIDUser(models.Model):
     sub = models.CharField(max_length=255, unique=True)
-    issuer = models.ForeignKey(OpenIDProvider)
-    user = models.OneToOneField(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
-            related_name='oidc_account')
+    issuer = models.ForeignKey(
+        OpenIDProvider,
+        on_delete=models.PROTECT
+    )
+    user = models.OneToOneField(
+        getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
+        related_name='oidc_account',
+        on_delete=models.PROTECT
+    )
 
     access_token = models.CharField(max_length=255)
     refresh_token = models.CharField(max_length=255)
