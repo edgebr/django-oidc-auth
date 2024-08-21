@@ -24,9 +24,9 @@ class OpenIDConnectBackend(object):
             id_token = provider.verify_id_token(credentials['id_token'])
 
             oidc_user = OpenIDUser.get_or_create(id_token,
-                    credentials['access_token'],
-                    credentials.get('refresh_token', ''),
-                    provider)
+                                                 credentials['access_token'],
+                                                 credentials.get('refresh_token', ''),
+                                                 provider)
 
             return oidc_user.user
         except Exception as e:

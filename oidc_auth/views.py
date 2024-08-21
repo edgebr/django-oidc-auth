@@ -1,13 +1,14 @@
 from urllib.parse import urlencode
 from django.conf import settings
 from django.http import HttpResponseBadRequest
-from django.contrib.auth import REDIRECT_FIELD_NAME, authenticate, login as django_login
+from django.contrib.auth import REDIRECT_FIELD_NAME, login as django_login
 from django.urls import reverse
 from django.shortcuts import render, redirect
 import requests
 
 from . import errors
 from . import utils
+from .auth import OpenIDConnectBackend
 from .utils import log
 from .settings import oidc_settings
 from .forms import OpenIDConnectForm
@@ -91,8 +92,8 @@ def login_complete(request, login_complete_view='oidc-complete',
     log.debug('Token exchange done, proceeding authentication')
     credentials = response.json()
     credentials['provider'] = provider
-    user = authenticate(credentials=credentials)
-    django_login(request, user)
+    user = OpenIDConnectBackend().authenticate(credentials=credentials)
+    django_login(request, user, backend='oidc_auth.auth.OpenIDConnectBackend')
 
     return redirect(nonce.redirect_url)
 

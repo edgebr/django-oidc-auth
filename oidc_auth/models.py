@@ -31,7 +31,7 @@ class Nonce(models.Model):
         """This method generates and returns a nonce, an unique generated
         string. If the maximum of retries is exceeded, it returns None.
         """
-        CHARS = string.letters + string.digits
+        CHARS = string.ascii_letters + string.digits
 
         for i in range(5):
             _hash = ''.join(random.choice(CHARS) for n in range(length))
@@ -147,7 +147,7 @@ class OpenIDProvider(models.Model):
 
         id_token = JWS().verify_compact(token, self.signing_keys)
         log.debug('Token verified, %s' % id_token)
-        return json.loads(id_token)
+        return id_token
 
     @staticmethod
     def _get_issuer(token):
